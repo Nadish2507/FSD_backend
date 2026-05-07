@@ -11,7 +11,10 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+  origin: ['https://fsd-frontend-g2y3.vercel.app', 'http://localhost:5173'],
+  credentials: true
+}));
 app.use(express.json());
 
 // Routes
@@ -23,9 +26,14 @@ app.use('/api/projects', projectRoutes);
 const PORT = process.env.PORT || 5000;
 
 // Database Connection
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('MongoDB Connected'))
-  .catch(err => console.error('MongoDB Connection Error:', err));
+const mongoURI = process.env.MONGO_URI;
+if (!mongoURI) {
+  console.error('ERROR: MONGO_URI is not defined in environment variables!');
+} else {
+  mongoose.connect(mongoURI)
+    .then(() => console.log('MongoDB Connected'))
+    .catch(err => console.error('MongoDB Connection Error:', err));
+}
 
 // Basic Route
 app.get('/', (req, res) => {
